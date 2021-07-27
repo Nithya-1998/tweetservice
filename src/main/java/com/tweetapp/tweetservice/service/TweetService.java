@@ -19,6 +19,7 @@ import com.tweetapp.tweetservice.dto.TweetDto;
 import com.tweetapp.tweetservice.exception.Message;
 import com.tweetapp.tweetservice.exception.TweetNotFoundException;
 import com.tweetapp.tweetservice.repository.TweetRepository;
+
 /**
  * @author Nithya T
  */
@@ -26,7 +27,7 @@ import com.tweetapp.tweetservice.repository.TweetRepository;
 public class TweetService {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(TweetService.class);
-	
+
 	@Autowired
 	public TweetRepository tweetRepository;
 
@@ -37,8 +38,8 @@ public class TweetService {
 			tweets = tweetRepository.findAll();
 		} catch (Exception e) {
 			LOGGER.info("Internal server error");
-		}	
-		return (List<Tweet>) tweets;
+		}
+		return  (List<Tweet>) tweets;
 	}
 
 	@Transactional
@@ -66,9 +67,9 @@ public class TweetService {
 	@Transactional
 	public Tweet replyPostTweet(ReplyTweet replyTweet, String loginId, String id) {
 		Tweet tweet = getTweetById(id);
-//		UUID uuid = UUID.randomUUID();
-//		String uuidAsString = uuid.toString();
-//		replyTweet.setId(uuidAsString);
+		UUID uuid = UUID.randomUUID();
+		String uuidAsString = uuid.toString();
+		replyTweet.setId(uuidAsString);
 		replyTweet.setRepliedDTTM(LocalDateTime.now());
 		replyTweet.setLoginId(loginId);
 		tweet.getReplyTweets().add(replyTweet);
@@ -78,13 +79,13 @@ public class TweetService {
 
 	@Transactional
 	public Tweet updateTweet(Tweet tweet, String loginId, String id) {
-		Tweet oldtweet = getTweetById(id);
+		Tweet oldtweet = tweetRepository.findById(id).get();
 		if (oldtweet != null) {
 			tweet.setPostDTTM(LocalDateTime.now());
 			tweetRepository.save(tweet);
 			return tweet;
 		} else {
-			return oldtweet;
+			return tweet;
 		}
 	}
 
